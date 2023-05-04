@@ -1,40 +1,53 @@
 package com.kbstar.controller;
 
 
-import com.kbstar.dto.Cust;
 import com.kbstar.dto.Item;
 import com.kbstar.service.ItemService;
+import com.kbstar.util.FileUploadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/item")
 public class ItemController {
-
     @Autowired
     ItemService itemService;
-
     String dir = "item/";
 
-    // 127.0.0.1/cust
-    @RequestMapping("")
-    public String main(Model model){
-        model.addAttribute("left", dir+"left");
-        model.addAttribute("center", dir+"center");
-        return "index";
-    }
+    @Value("${uploadimgdir}")
+    String uploadimgdir;
+
     @RequestMapping("/add")
     public String add(Model model){
-        model.addAttribute("left", dir+"left");
         model.addAttribute("center", dir+"add");
         return "index";
+    }
+
+    @RequestMapping("/addimpl")
+    public String addimpl(Model model, Item item) throws Exception {
+        MultipartFile mf =  item.getImg();
+
+        //파일에서 이미지를 끄집어 낸다.
+        String imgname = mf.getOriginalFilename();
+        item.setImgname(imgname);
+
+        //db에 파일 저장
+        itemService.register(item);
+
+        //이미지 저장 디렉토리에 이미지를 저장한다.
+        //우리가 업로드한 파일이 원하는 폴더로 들어간다(static으로 호출해서 함수 사용)
+        FileUploadUtil.saveFile(mf, uploadimgdir);
+
+        return "redirect:/item/all";
     }
 
     @RequestMapping("/all")
@@ -46,4 +59,33 @@ public class ItemController {
         return "index";
     }
 
+    @RequestMapping("/detail")
+    public String detail(Model model, int id) throws Exception {
+        Item item = null;
+        item = itemService.get(id);
+        model.addAttribute("gitem", item);
+        model.addAttribute("center", dir+"detail");
+        return "index";
+    }
+
+    @RequestMapping("/updateimpl")
+    public String updateimpl(Model model, Item item) throws Exception {
+        MultipartFile mf =  item.getImg();
+        String new_imgname = mf.getOriginalFilename();
+        if(new_imgname.equals("") || new_imgname == null) {
+            itemService.modify(item);
+        } else {
+            item.setImgname(new_imgname);
+            itemService.modify(item);
+            FileUploadUtil.saveFile(mf, uploadimgdir);
+        }
+        itemService.modify(item);
+        return "redirect:/item/detail?id="+item.getId();
+    }
+
+    @RequestMapping("/deleteimpl")
+    public String deleteimpl(Model model, int id) throws Exception{
+        itemService.remove(id);
+        return "redirect:/item/all";
+    }
 }
