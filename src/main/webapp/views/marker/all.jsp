@@ -39,7 +39,7 @@ c 로 쓰겠다는것, 그래서 밑에 c:out  으로 쓸 수 있음--%>
           <label class="control-label col-sm-4" for="loc">loc:</label>
           <div class="col-sm-4">
             <select class="form-control" id="loc" name="loc">
-                <option value="">All</option>
+                <option value="">지역</option>
                 <option value="s"<c:if test="${ms.loc=='s'}">selected</c:if>>서울</option>
                 <option value="b"<c:if test="${ms.loc=='b'}">selected</c:if>>부산</option>
                 <option value="j"<c:if test="${ms.loc=='j'}">selected</c:if>>제주</option>

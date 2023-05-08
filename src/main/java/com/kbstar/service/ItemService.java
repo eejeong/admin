@@ -1,6 +1,7 @@
 package com.kbstar.service;
 
 import com.kbstar.dto.Item;
+import com.kbstar.dto.ItemSearch;
 import com.kbstar.frame.KBService;
 import com.kbstar.mapper.ItemMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,8 @@ public class ItemService implements KBService<Integer, Item> {
         return mapper.selectall();
     }
 
-
+    public List<Item> search(ItemSearch ms) throws Exception {
+        return mapper.search(ms);
+    }
 
 }
