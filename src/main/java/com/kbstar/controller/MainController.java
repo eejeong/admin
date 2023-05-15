@@ -128,4 +128,11 @@ public class MainController {
         model.addAttribute("center", "websocket");
         return "index";
     }
+
+    @RequestMapping("/callcenter")
+    public String callcenter(Model model) {
+        model.addAttribute("adminserver", adminserver);
+        model.addAttribute("center", "callcenter");
+        return "index";
+    }
 }
